@@ -20,6 +20,7 @@ import time
 
 import signal
 
+<<<<<<< HEAD
 
 
 serial_strings = ["","","",""] # index 0 = top of window
@@ -42,10 +43,23 @@ def rcv_add_top(message):
 
                 topwin.addnstr(i + 1, 2, serial_strings[i], 58)
 
+=======
+serial_strings = ["","","",""] # index 0 = top of window
+sent_strings = ["","","",""] # index 0 = top of window
+
+def rcv_add_top(message):
+        serial_strings.pop(0)
+        serial_strings.append(message)
+        topwin.clrtobot()
+        topwin.box()
+        for i in range(0, 4):
+                topwin.addnstr(i + 1, 2, serial_strings[i], 58)
+>>>>>>> be7d8cd3adba37709b77c40559b747975ca9ec29
         topwin.addstr(0,2," Received ", curses.A_REVERSE)
 
         topwin.refresh()
 
+<<<<<<< HEAD
 
 
 def send(message):
@@ -82,6 +96,25 @@ def send(message):
 
 
 
+=======
+def send(message):
+        sent_strings.pop(0)
+        sent_strings.append(message)
+        midwin.clrtobot()
+        for i in range(0, 4):
+                midwin.addnstr(i + 1, 2, sent_strings[i], 58)
+        midwin.box()
+        midwin.addstr(0,3, " Sent ", curses.A_REVERSE)
+        midwin.refresh()
+
+        serial_out.write(message + chr(0xA))
+        serial.flush()
+
+        # Send message to serial port
+        # and display on output log
+
+
+>>>>>>> be7d8cd3adba37709b77c40559b747975ca9ec29
 def end_program():
 
         curses.curs_set(1)
@@ -137,6 +170,7 @@ daemon_sock.bind(sock_addr);
 daemon_sock.listen(1)	# Listen for connection from daemon
 
 
+<<<<<<< HEAD
 
 
 
@@ -144,10 +178,17 @@ stdscr = curses.initscr()
 
 stdscr.keypad(1)
 
+=======
+stdscr = curses.initscr()
+stdscr.keypad(1)
+>>>>>>> be7d8cd3adba37709b77c40559b747975ca9ec29
 curses.noecho()
 
 curses.cbreak()
+<<<<<<< HEAD
 
+=======
+>>>>>>> be7d8cd3adba37709b77c40559b747975ca9ec29
 curses.curs_set(0)
 
 
@@ -160,11 +201,15 @@ topwin_h = 6
 
 midwin_h = 6
 
+<<<<<<< HEAD
 
 
 botwin_h = 5
 
 
+=======
+botwin_h = 5
+>>>>>>> be7d8cd3adba37709b77c40559b747975ca9ec29
 
 topwin = curses.newwin(topwin_h, win_w, 0, 0)
 
@@ -176,6 +221,7 @@ midwin = curses.newwin(midwin_h, win_w, topwin_h, 0)
 
 midwin.box()
 
+<<<<<<< HEAD
 
 
 botwin = curses.newwin(botwin_h, win_w, topwin_h + midwin_h, 0)
@@ -187,6 +233,12 @@ botwin.box()
 botwin.nodelay(True) # Makes getch() non-blocking
 
 
+=======
+botwin = curses.newwin(botwin_h, win_w, topwin_h + midwin_h, 0)
+botwin.keypad(1)
+botwin.box()
+botwin.nodelay(True) # Makes getch() non-blocking
+>>>>>>> be7d8cd3adba37709b77c40559b747975ca9ec29
 
 topwin.addstr(0,2," Received ", curses.A_REVERSE)
 
@@ -194,6 +246,7 @@ midwin.addstr(0,3, " Sent ", curses.A_REVERSE)
 
 botwin.addstr(0,2, " Buffer ", curses.A_REVERSE)
 
+<<<<<<< HEAD
 
 
 serial = open("/dev/ttyUSB0", "r")	# Should make this configurable in the future
@@ -252,14 +305,49 @@ while True:
 
 
 
+=======
+serial = open("/dev/ttyS3", "r")	# Should make this configurable in the future
+serial_out = open("/dev/ttyS3", "w")	# Should make this configurable in the future
+
+
+inputs = [daemon_sock, serial]	# List of inputs, for select to use
+outputs = [ serial ]
+s = ""
+
+stdscr.refresh()
+topwin.refresh()
+midwin.refresh()
+botwin.refresh()
+
+while True:
+
+        c = botwin.getch()
+        if (c != -1 and c != 0xA and len(s) < 58 and c != 9): #Todo put invalid chars in a collection and check against it
+                s = s + chr(c)
+        botwin.addstr(2,2, s)
+
+        if (c == 0xA):
+                send(s) # Appends newline so serial device sends the string
+                s = ""
+                botwin.clear()
+                botwin.box()
+                botwin.addstr(0,2, " Buffer ", curses.A_REVERSE)
+                botwin.refresh()
+
+>>>>>>> be7d8cd3adba37709b77c40559b747975ca9ec29
         read_ready, write_ready, except_ready = select.select(inputs, outputs, [])
 
         for r in read_ready:
+<<<<<<< HEAD
 
                 if r == serial: #and serial not in write_ready: # Not in write_ready prevents placing string in buffer and then accidentally reading it right back
 
                         rcv_add_top(serial.readline().rstrip() )
 
+=======
+                if r == serial: #and serial not in write_ready: # Not in write_ready prevents placing string in buffer and then accidentally reading it right back
+                        rcv_add_top(serial.readline().rstrip() )
+>>>>>>> be7d8cd3adba37709b77c40559b747975ca9ec29
                 if r == daemon_sock:
 
                         botwin.addstr(1,1,daemon_sock.readline().rstrip())
@@ -267,8 +355,13 @@ while True:
         #for w in write_ready:
 
                 #Other things
+<<<<<<< HEAD
 
         botwin.refresh()
 
         
 
+=======
+        botwin.refresh()
+        
+>>>>>>> be7d8cd3adba37709b77c40559b747975ca9ec29
