@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 import RPi.GPIO as GPIO
 import signal, sys, time
@@ -13,34 +13,35 @@ def Exit_gracefully(signal, frame):
 
 signal.signal(signal.SIGINT, Exit_gracefully)
 
+# Stored MSB ----- LSB
+message = "0000000"
 
 GPIO.setmode(GPIO.BCM)
 
 toggles = [4,14,15,18,17,27,22] #Follows physical order on board
 push    = 23
 
-# TODO
-# Store byte on switches in a global
-# and send it as a char through the socket each time
-# a change occurs.
-#
-# Will require changing each interrupt handler (bit0, etc)
-# and assembling a byte from bits in the report function.
-
 
 sock_addr = './unix_socket'
-def report(msg):
+def report(cond):
+    # First, figure out what message was sent
+    if (cond == "p"): # Means enter the string
+        xmit("SND " + message) # Sends string as text
+    else: # Value change
+        pos = int(cond[0]) # Index of bit
+        message = message[::-1] # Reverse string to replace from LSB end first because it's easier
+        message = message[pos: ] + cond[1] + message[ :pos + 1] # Replace bit
+        message = message[::-1] # Reverse again to restore bit order. It just works, okay?
+        xmit("UPD " + message) # Transmit it
+
+
+def xmit(msg):
     if os.path.exists(sock_addr):
-        char = 0
-        bits = [
-        for i in range(0,6):
-            
         daemon_sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
         daemon_sock.connect(sock_addr)
         daemon_sock.send(msg)
         daemon_sock.close()
-#    else:
-#        print("No socket")
+    
 
 def bit0(channel):
     b = GPIO.input(4) # Determine if high or low now
@@ -62,7 +63,7 @@ def bit5(channel):
     report("5" + str(b)) 
 def bit6(channel):
     b = GPIO.input(4) 
-    report("0" + str(b)) 
+    report("6" + str(b)) 
         
 def pushbtn(channel):
     report("p")
