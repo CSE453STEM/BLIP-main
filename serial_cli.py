@@ -35,7 +35,8 @@ def send(message):
 
         ser.write(str.encode(message + chr(0xA)))
         ser.flush()
-        printer.write(message) # Eventually make a word-wrapping function to encase this probably?
+        ser_printer.write(str.encode(message)) # Eventually make a word-wrapping function to encase this probably?
+        ser_printer.flush()
         # Send message to ser port
         # and display on output log
 
@@ -95,7 +96,12 @@ botwin.addstr(0,2, " Buffer ", curses.A_REVERSE)
 
 #open communication serial
 ser = serial.Serial("/dev/ttyUSB0")	# Should make this configurable in the future
-printer = serial.Serial("/dev/ttyAMA0")
+ser_printer = serial.Serial()
+ser_printer.baudrate = 19200
+ser_printer.port = "/dev/ttyAMA0"
+ser_printer.open()
+
+
 
 inputs = [daemon_sock, ser]	# List of inputs, for select to use
 outputs = [ ser ]
@@ -135,8 +141,13 @@ while True:
                 if r == ser: #and ser not in write_ready: # Not in write_ready prevents placing string in buffer and then accidentally reading it right back
                         msg = (ser.readline()).decode("utf-8")
                         rcv_add_top(msg)
-                        printer.write(msg) # Eventually make a word-wrapping function to encase this probably?
+                        #ser_printer.write(msg) # Eventually make a word-wrapping function to encase this probably?
                 if r == daemon_sock:
                         botwin.addstr(1,2,daemon_sock.readline().rstrip())
         botwin.refresh()
+
+
+#we should probably close the serial connection at some point?? Maybe not here.
+ser.close()
+ser_printer.close()
 
