@@ -36,7 +36,6 @@ def send(message):
         ser.write(str.encode(message + chr(0xA)))
         ser.flush()
         ser_printer.write(str.encode(message)) # Eventually make a word-wrapping function to encase this probably?
-        ser_printer.flush()
         # Send message to ser port
         # and display on output log
 
