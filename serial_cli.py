@@ -8,6 +8,7 @@ import sys
 import os
 import time
 import signal
+import textwrap
 import serial
 
 serial_strings = ["","","",""] # index 0 = top of window
@@ -22,6 +23,10 @@ def rcv_add_top(message):
         topwin.box()
         topwin.addstr(0,2," Received ", curses.A_REVERSE)
         topwin.refresh()
+        message = "<< " + message
+        lines[] = textwrap.wrap(message, 62)
+        for line in lines:
+                ser_printer.write(str.encode(line) + chr(0xA) # Eventually make a word-wrapping function to encase this probably?
 
 def send(message):
         sent_strings.pop(0)
@@ -35,7 +40,12 @@ def send(message):
 
         ser.write(str.encode(message + chr(0xA)))
         ser.flush()
-        ser_printer.write(str.encode(message)) # Eventually make a word-wrapping function to encase this probably?
+
+        message = ">> " + message
+        lines[] = textwrap.wrap(message, 62)
+
+        for line in lines:
+                ser_printer.write(str.encode(line) + chr(0xA) # Eventually make a word-wrapping function to encase this probably?
         # Send message to ser port
         # and display on output log
 
