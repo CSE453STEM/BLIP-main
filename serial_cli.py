@@ -24,9 +24,10 @@ def rcv_add_top(message):
         topwin.addstr(0,2," Received ", curses.A_REVERSE)
         topwin.refresh()
         message = "<< " + message
-        lines[] = textwrap.wrap(message, 62)
+        lines = textwrap.wrap(message, 62)
         for line in lines:
-                ser_printer.write(str.encode(line) + chr(0xA) # Eventually make a word-wrapping function to encase this probably?
+                ser_printer.write(str.encode(line + chr(0xA))
+                ser_printer.flush()
 
 def send(message):
         sent_strings.pop(0)
@@ -42,10 +43,11 @@ def send(message):
         ser.flush()
 
         message = ">> " + message
-        lines[] = textwrap.wrap(message, 62)
+        lines = textwrap.wrap(message, 62)
 
         for line in lines:
-                ser_printer.write(str.encode(line) + chr(0xA) # Eventually make a word-wrapping function to encase this probably?
+                ser_printer.write(str.encode(line + chr(0xA))
+                ser_printer.flush()
         # Send message to ser port
         # and display on output log
 
