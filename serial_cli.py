@@ -15,8 +15,10 @@ serial_strings = ["","","",""] # index 0 = top of window
 sent_strings = ["","","",""] # index 0 = top of window
 
 def rcv_add_top(message):
+        # Rotate old string out, place new one in
         serial_strings.pop(0)
         serial_strings.append(message)
+        # Clear window, print messages, refresh window
         topwin.clrtobot()
         for i in range(0, 4):
                 topwin.addnstr(i + 1, 2, serial_strings[i], 58)
@@ -48,23 +50,24 @@ def send(message):
         for line in lines:
                 ser_printer.write(str.encode(line + chr(0xA))
                 ser_printer.flush()
-        # Send message to ser port
-        # and display on output log
 
 def end_program():
+        # Graceful exit, restoring terminal and cleaning up
         curses.curs_set(1)
         curses.nocbreak()
         stdscr.keypad(0)
         curses.echo()
         curses.endwin()
         os.unlink(sock_addr)
+        ser.close()
+        ser_printer.close()
         sys.exit(0)
 
 def sigint_handler(signal, frame):
         end_program()
 
 
-signal.signal(signal.SIGINT, sigint_handler) # Exit gracefully
+signal.signal(signal.SIGINT, sigint_handler) # Exit gracefully on ^C
 
 sock_addr = './unix_socket'
 
@@ -72,7 +75,7 @@ try:
     os.unlink(sock_addr)
 except OSError:
     if os.path.exists(sock_addr):
-        raise
+        pass
 
 
 daemon_sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM);
@@ -102,7 +105,7 @@ botwin.box()
 botwin.nodelay(True) # Makes getch() non-blocking
 topwin.addstr(0,2," Received ", curses.A_REVERSE)
 midwin.addstr(0,2, " Sent ", curses.A_REVERSE)
-switchwin.addstr(0,2, " Switch ", curses.A_REVERSE)
+switchwin.addstr(0,2, " Switches ", curses.A_REVERSE)
 botwin.addstr(0,2, " Buffer ", curses.A_REVERSE)
 
 #open communication serial
