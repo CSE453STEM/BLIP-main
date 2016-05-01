@@ -18,7 +18,7 @@ message = "0000000"
 
 GPIO.setmode(GPIO.BCM)
 
-toggles = [4,14,15,18,17,27,22] #Follows physical order on board
+toggles = [4,18,17,27,22,23,24] # Tried to pick sensible order
 push    = 23
 
 
