@@ -29,6 +29,7 @@ def report(cond):
         xmit("SND " + message) # Sends string as text
     else: # Value change
         pos = int(cond[0]) # Index of bit
+        global message # Otherwise Python assumes it's local
         message = message[::-1] # Reverse string to replace from LSB end first because it's easier
         message = message[pos: ] + cond[1] + message[ :pos + 1] # Replace bit
         message = message[::-1] # Reverse again to restore bit order. It just works, okay?
