@@ -19,7 +19,7 @@ message = "0000000"
 GPIO.setmode(GPIO.BCM)
 
 toggles = [4,18,17,27,22,23,24] # Tried to pick sensible order
-push    = 23
+push    = 10
 
 
 sock_addr = './unix_socket'
@@ -70,17 +70,17 @@ def pushbtn(channel):
 
 for i in toggles: # Set toggleswitch pins to input, set pulldowns
     GPIO.setup(i, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-GPIO.setup(23, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+GPIO.setup(push, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
 # Set interrupt listeners (probably exists a neater way?)
 GPIO.add_event_detect( 4, GPIO.BOTH, callback=bit0, bouncetime=350)
-GPIO.add_event_detect(14, GPIO.BOTH, callback=bit1, bouncetime=350)
-GPIO.add_event_detect(15, GPIO.BOTH, callback=bit2, bouncetime=350)
-GPIO.add_event_detect(18, GPIO.BOTH, callback=bit3, bouncetime=350)
-GPIO.add_event_detect(17, GPIO.BOTH, callback=bit4, bouncetime=350)
-GPIO.add_event_detect(27, GPIO.BOTH, callback=bit5, bouncetime=350)
-GPIO.add_event_detect(22, GPIO.BOTH, callback=bit6, bouncetime=350)
-GPIO.add_event_detect(23, GPIO.BOTH, callback=pushbtn)
+GPIO.add_event_detect(18, GPIO.BOTH, callback=bit1, bouncetime=350)
+GPIO.add_event_detect(17, GPIO.BOTH, callback=bit2, bouncetime=350)
+GPIO.add_event_detect(27, GPIO.BOTH, callback=bit3, bouncetime=350)
+GPIO.add_event_detect(22, GPIO.BOTH, callback=bit4, bouncetime=350)
+GPIO.add_event_detect(23, GPIO.BOTH, callback=bit5, bouncetime=350)
+GPIO.add_event_detect(24, GPIO.BOTH, callback=bit6, bouncetime=350)
+GPIO.add_event_detect(push, GPIO.BOTH, callback=pushbtn)
 
 while True:
     pass
