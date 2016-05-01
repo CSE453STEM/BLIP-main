@@ -11,18 +11,6 @@ def Exit_gracefully(signal, frame):
         pass
     sys.exit(0)
 
-signal.signal(signal.SIGINT, Exit_gracefully)
-
-# Stored MSB ----- LSB
-message = "0000000"
-
-GPIO.setmode(GPIO.BCM)
-
-toggles = [4,18,17,27,22,23,24] # Tried to pick sensible order
-push    = 10
-
-
-sock_addr = './unix_socket'
 def report(cond):
     # First, figure out what message was sent
     if (cond == "p"): # Means enter the string
@@ -68,6 +56,20 @@ def bit6(channel):
         
 def pushbtn(channel):
     report("p")
+
+signal.signal(signal.SIGINT, Exit_gracefully)
+
+# Stored MSB ----- LSB
+message = "0000000"
+
+GPIO.setmode(GPIO.BCM)
+
+toggles = [4,18,17,27,22,23,24] # Tried to pick sensible order
+push    = 10
+
+
+sock_addr = './unix_socket'
+
 
 for i in toggles: # Set toggleswitch pins to input, set pulldowns
     GPIO.setup(i, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
