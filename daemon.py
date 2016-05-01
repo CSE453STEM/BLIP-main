@@ -12,12 +12,12 @@ def Exit_gracefully(signal, frame):
     sys.exit(0)
 
 def report(cond):
+    global message # Otherwise Python assumes it's local
     # First, figure out what message was sent
     if (cond == "p"): # Means enter the string
         xmit("SND " + message) # Sends string as text
     else: # Value change
         pos = int(cond[0]) # Index of bit
-        global message # Otherwise Python assumes it's local
         message = message[::-1] # Reverse string to replace from LSB end first because it's easier
         message = message[pos: ] + cond[1] + message[ :pos + 1] # Replace bit
         message = message[::-1] # Reverse again to restore bit order. It just works, okay?
