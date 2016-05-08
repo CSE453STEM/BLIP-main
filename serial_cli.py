@@ -33,7 +33,7 @@ def rcv_add_top(message):
         topwin.addstr(0,2," Received ", curses.A_REVERSE)
         topwin.refresh()
         message = "<< " + message
-        lines = textwrap.wrap(message, 62)
+        lines = textwrap.wrap(message, 32) # Wrap at 32 chars for printer
         for line in lines:
                 printer_ser.write(str.encode(line + chr(0xA))
                 printer_ser.flush()
@@ -45,8 +45,9 @@ def rcv_add_top(message):
 ################################################################################
 def update_char(newchar):
         switchchar = newchar
-        # TODO write code to update and display the char in decimal and as a chr
-        # cODE
+        switchwin.addstr(1,15, chr(switchchar))
+        switchwin.addstr(1,18, str(switchchar))
+        switchwin.refresh()
 
 
 ################################################################################
@@ -161,6 +162,7 @@ midwin.addstr(0,2, " Sent ", curses.A_REVERSE)
 
 switchwin = curses.newwin(switchwin_h, win_w, topwin_h + midwin_h, 0)
 switchwin.addstr(0,2, " Switches ", curses.A_REVERSE)
+switchwin.addstr(1,5, "Character:")
 
 botwin = curses.newwin(botwin_h, win_w, topwin_h + midwin_h + switchwin_h, 0)
 botwin.keypad(1)
@@ -180,7 +182,7 @@ botwin.refresh()
 blip_ser = serial.Serial("/dev/ttyUSB0", baudrate=19200)
 
 printer_ser = serial.Serial("/dev/ttyAMA0", baudrate=19200)
-printer_ser.open() #TODO is this needed?
+printer_ser.open() # Is this needed?
 
 switch_ser = serial.Serial("/dev/ttyACM0", baudrate=19200)
 switch_ser.open()
@@ -193,11 +195,10 @@ inputs = [switch_ser, blip_ser]	# List of inputs, for select to use
 
 
 while True:
-### TODO Check against invalid chars?
-        c = botwin.getch()
+        c = botwin.getch() # Non blocking: returns -1 if no char available
         if c != -1 and c != 0xA and len(s) < 58 and c != 9:
                 if c == 263: #backspace
-                        s = s[:-1]
+                        s = s[:-1] # Drop last char of string
                         botwin.clear()
                         botwin.box()
                         botwin.addstr(0,2, " Buffer ", curses.A_REVERSE)
@@ -221,14 +222,8 @@ while True:
                 if r == blip_ser:
                         msg = (blip_ser.readline()).decode("utf-8")
                         rcv_add_top(msg)
-                        #printer_ser.write(msg) # Eventually make a word-wrapping function to encase this probably?
                 if r == switch_ser:
                         global switchchar = read_switches()
                         update_char(switchchar)
         botwin.refresh()
-
-
-#we should probably close the serial connection at some point?? Maybe not here.
-blip_ser.close()
-printer_ser.close()
 
