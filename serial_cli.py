@@ -35,7 +35,7 @@ def rcv_add_top(message):
         message = "<< " + message
         lines = textwrap.wrap(message, 32) # Wrap at 32 chars for printer
         for line in lines:
-                printer_ser.write(str.encode(line + chr(0xA))
+                printer_ser.write(str.encode(line + chr(0xA)))
                 printer_ser.flush()
 
 
@@ -45,8 +45,8 @@ def rcv_add_top(message):
 ################################################################################
 def update_char(newchar):
         switchchar = newchar
-        switchwin.addstr(1,15, chr(switchchar))
-        switchwin.addstr(1,18, str(switchchar))
+        switchwin.addstr(1,15, switchchar)
+        switchwin.addstr(1,18, switchchar)
         switchwin.refresh()
 
 
@@ -72,8 +72,9 @@ def send(message):
         lines = textwrap.wrap(message, 62)
 
         for line in lines:
-                printer_ser.write(str.encode(line + chr(0xA))
+                printer_ser.write(str.encode(line + chr(0xA)))
                 printer_ser.flush()
+
 
 ################################################################################
 #   pushbutton:
@@ -84,7 +85,7 @@ def send(message):
 ################################################################################
 def pushbutton():
         if len(s) < 58 and switchchar in string.printable:
-            s = s + chr(switchchar)
+            s = s + switchchar
             botwin.clear()
             botwin.box()
             botwin.addstr(1,2, s)
@@ -104,7 +105,7 @@ def read_switches():
         # If top bit is set, pushbutton is active. Handle, then strip MSB
         if (int(switchbits, 2) >= 128):
             pushbutton()
-            switchbits = ' ' + switchbits[1:]
+            switchbits = '0' + switchbits[1:]
         return chr(int(switchbits, 2))
 
 
@@ -182,9 +183,17 @@ botwin.refresh()
 blip_ser = serial.Serial("/dev/ttyUSB0", baudrate=19200)
 
 printer_ser = serial.Serial("/dev/ttyAMA0", baudrate=19200)
+try:
+        printer_ser.close()
+except:
+        pass
 printer_ser.open() # Is this needed?
 
 switch_ser = serial.Serial("/dev/ttyACM0", baudrate=19200)
+try:
+        switch_ser.close()
+except:
+        pass
 switch_ser.open()
 
 
@@ -192,6 +201,7 @@ switch_ser.open()
 # Set up Select to handle multiple inputs
 ################################################################################
 inputs = [switch_ser, blip_ser]	# List of inputs, for select to use
+outputs = []
 
 
 while True:
@@ -220,10 +230,11 @@ while True:
         read_ready, write_ready, except_ready = select.select(inputs, outputs, [])
         for r in read_ready:
                 if r == blip_ser:
-                        msg = (blip_ser.readline()).decode("utf-8")
+                        msg = blip_ser.readline().decode("utf-8")
                         rcv_add_top(msg)
                 if r == switch_ser:
-                        global switchchar = read_switches()
+                        global switchchar 
+                        switchchar = read_switches()
                         update_char(switchchar)
         botwin.refresh()
 
