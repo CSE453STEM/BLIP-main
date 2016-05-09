@@ -213,7 +213,6 @@ while True:
                         botwin.box()
                         botwin.addstr(0,2, " Buffer ", curses.A_REVERSE)
                         botwin.addstr(1,2,s)
-                        botwin.refresh()
                 else:
                         #s = s + str(ord(chr(c)))
                         s = s + chr(c)
@@ -225,7 +224,6 @@ while True:
                 botwin.clear()
                 botwin.box()
                 botwin.addstr(0,2, " Buffer ", curses.A_REVERSE)
-                botwin.refresh()
 
         read_ready, write_ready, except_ready = select.select(inputs, outputs, [])
         for r in read_ready:
