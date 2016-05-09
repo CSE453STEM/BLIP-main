@@ -31,6 +31,7 @@ void loop() {
     if (bits != oldbits) {
         oldbits = bits;
         /* String of binary representation is best format to pass to Python */
-        Serial.println(bits, BIN); 
+        Serial.write(bits); 
+        Serial.println();
     }
 }

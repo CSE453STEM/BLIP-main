@@ -89,7 +89,6 @@ def pushbutton():
             botwin.clear()
             botwin.box()
             botwin.addstr(1,2, s)
-            botwin.refresh()
 
 
 ################################################################################
@@ -103,10 +102,12 @@ def read_switches():
         switchbits = switch_ser.readline().rstrip() # Read line, strip \n
         charval = 0;
         # If top bit is set, pushbutton is active. Handle, then strip MSB
-        if (int(switchbits, 2) >= 128):
+        if (ord(switchbits) >= 128):
             pushbutton()
-            switchbits = '0' + switchbits[1:]
-        return chr(int(switchbits, 2))
+            switchbits = ord(switchbits)
+            switchbits = switchbits & 0x7F
+            switchbits = chr(switchbits)
+        return switchbits
 
 
 
